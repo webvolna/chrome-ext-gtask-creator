@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "Gtask creator by MHD",
+    "version": "1.3",
+    "description": "Добавляет текущую страницу в Google Tasks через PHP-сервер. MustHaveDigital 2025",
+    "permissions": ["activeTab", "scripting", "notifications"],
+    "host_permissions": ["https://musthaveapp.na4u.ru/*"],
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+      }
+    }
+  }
+  
