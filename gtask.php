@@ -8,7 +8,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// === НАСТРОЙКИ ===
+// ==== НАСТРОЙКИ ====
 $clientId     = 'YOUR_GOOGLE_CLIENT_ID';
 $clientSecret = 'YOUR_GOOGLE_CLIENT_SECRET';
 $redirectUri  = 'https://musthaveapp.na4u.ru/gtask.php';
