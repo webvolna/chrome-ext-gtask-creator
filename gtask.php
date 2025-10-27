@@ -16,7 +16,7 @@ $scope        = 'https://www.googleapis.com/auth/tasks';
 $tokenFile    = __DIR__ . '/gtoken.json';
 
 // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
-function httpPost(string $url, array $data, string $token = null): array
+function httpPost(string $url, array $data, ?string $token = null): array
 {
     $ch = curl_init($url);
     $headers = ['Content-Type: application/json'];
@@ -28,6 +28,11 @@ function httpPost(string $url, array $data, string $token = null): array
         CURLOPT_POSTFIELDS => json_encode($data),
     ]);
     $response = curl_exec($ch);
+    if ($response === false) {
+        $error = curl_error($ch);
+        curl_close($ch);
+        return ['status' => 0, 'body' => "cURL error: $error"];
+    }
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     return ['status' => $status, 'body' => $response];
@@ -51,6 +56,7 @@ session_start();
 
 function saveToken(array $token, string $file)
 {
+    $token['created'] = time(); // Добавляем время создания токена
     file_put_contents($file, json_encode($token, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 }
 
@@ -128,11 +134,11 @@ if (isset($token['expires_in'], $token['created']) && time() - $token['created']
         curl_close($ch);
         $newToken = json_decode($response, true);
         if (isset($newToken['access_token'])) {
-            $token['access_token'] = $newToken['access_token'];
-            $token['created'] = time();
-            saveToken($token, $tokenFile);
+            $newToken['refresh_token'] = $token['refresh_token']; // Сохраняем refresh_token
+            saveToken($newToken, $tokenFile);
+            $token = $newToken; // Обновляем текущий токен
         } else {
-            unlink($tokenFile);
+            error_log("Ошибка обновления токена: " . $response); // Логируем ошибку
             header("Location: {$redirectUri}");
             exit;
         }
